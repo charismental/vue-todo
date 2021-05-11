@@ -13,15 +13,20 @@ export default new Vuex.Store({
     SET_TASKS(state, tasksArr) {
       state.tasks = tasksArr;
     },
-    SHOW_SNACKBAR(state, { status, text }) {
+    SHOW_SNACKBAR(state, { text, status }) {
       state.snackbarText = text;
       state.showSnackbar = status;
     },
   },
   actions: {
-    toggleSnackbar({ commit }, text) {
+    toggleSnackbar({ commit, state }, text) {
       const snackbarObj = text && text.length ? { status: true, text } : { status: false, text: '' };
-      commit('SHOW_SNACKBAR', snackbarObj);
+      let timeout = 0;
+      if (state.showSnackbar && snackbarObj.status) {
+        commit('SHOW_SNACKBAR', { status: false, text: '' });
+        timeout = 200;
+      }
+      setTimeout(() => commit('SHOW_SNACKBAR', snackbarObj), timeout);
     },
     toggleDone({ commit, state }, taskId) {
       const tasks = [...state.tasks];
@@ -61,6 +66,4 @@ export default new Vuex.Store({
       }
     }
   },
-  modules: {
-  }
 })
